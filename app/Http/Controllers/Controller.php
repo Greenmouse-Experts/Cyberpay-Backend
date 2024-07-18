@@ -54,7 +54,7 @@ class Controller extends BaseController
             'subject' => $request->subject,
             'description' => $request->message,
             'created_at' => now(),
-            'admin' => 'info@admin.ng',
+            'admin' => 'greenmousedev@gmail.com',
         );
 
         /** Send message to the admin */
@@ -122,7 +122,7 @@ class Controller extends BaseController
             'description' => $request->description,
             'document_url' => $documentUrl,
             'created_at' => now(),
-            'admin' => 'info@admin.ng',
+            'admin' => 'greenmousedev@gmail.com',
         ];
 
         /** Send message to the admin */
@@ -211,7 +211,7 @@ class Controller extends BaseController
             'yearOfGraduation' => $request->yearOfGraduation,
             'cv' => $cvUrl,
             'created_at' => now(),
-            'admin' => 'info@admin.ng',
+            'admin' => 'greenmousedev@gmail.com',
         ];
 
         /** Send message to the admin */
