@@ -73,10 +73,10 @@ class Controller extends BaseController
     {
         // Define your validation rules
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'phone' => 'required|string',
-            'description' => 'required|string',
+            'name' => 'nullable|string',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string',
+            'description' => 'nullable|string',
             'document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png',
         ]);
 
@@ -107,19 +107,19 @@ class Controller extends BaseController
 
         // Process form data (e.g., send email, save to database)
         WhistleBlower::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'description' => $request->description,
+            'name' => $request->name ?? 'Annonymous',
+            'email' => $request->email ?? 'Annonymous',
+            'phone' => $request->phone ?? 'Annonymous',
+            'description' => $request->description ?? 'Annonymous',
             'document' => $documentUrl, // Save document URL in the database
         ]);
 
         /** Store information to include in mail in $data as an array */
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'description' => $request->description,
+            'name' => $request->name ?? 'Annonymous',
+            'email' => $request->email ?? 'Annonymous',
+            'phone' => $request->phone ?? 'Annonymous',
+            'description' => $request->description ?? 'Annonymous',
             'document_url' => $documentUrl,
             'created_at' => now(),
             'admin' => 'support@cyberpay.net.ng',
