@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Career;
 use App\Models\Contact;
+use App\Models\User;
 use App\Models\WhistleBlower;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -13,10 +14,74 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function admin_login(Request $request)
+    {
+        $validator = Validator::make(request()->all(), [
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $input = $request->only(['email', 'password']);
+
+        $admin = User::query()->where('email', $request->email)->first();
+
+        if ($admin && !Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect Password!',
+            ], 401);
+        }
+
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Email doesn't exist",
+            ], 401);
+        }
+
+        // authentication attempt
+        if (auth()->attempt($input, $request->get('remember'))) {
+
+            // Get the old token
+            $oldToken = $admin->tokens->where('name', 'API TOKEN')->first();
+
+            if($oldToken)
+            {
+                // Revoke the old token
+                $oldToken->delete();
+            }
+
+            $token = $admin->createToken("API TOKEN")->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Admin logged in succesfully.',
+                'token' => $token,
+                'data' => $admin
+            ], 200);
+
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "Admin authentication failed."
+            ], 401);
+        }
+    }
 
     function submitContact(Request $request)
     {
@@ -35,7 +100,7 @@ class Controller extends BaseController
                 'success' => false,
                 'message' => 'Validation failed. Please see errors parameter for details.',
                 'errors' => $validator->errors()
-            ]);
+            ], 422);
         }
         // Process form data (e.g., send email, save to database)
         Contact::create([
@@ -66,7 +131,7 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Thank you for reaching out! Your message has been successfully sent. We will get back to you shortly.',
-        ]);
+        ], 200);
     }
 
     function submitWhistleBlower(Request $request)
@@ -86,7 +151,7 @@ class Controller extends BaseController
                 'success' => false,
                 'message' => 'Validation failed. Please see errors parameter for details.',
                 'errors' => $validator->errors()
-            ]);
+            ], 422);
         }
 
         $documentUrl = null;
@@ -134,7 +199,7 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Thank you for reaching out! Your whistleblower report has been successfully submitted. We will review the information and get back to you shortly if necessary.',
-        ]);
+        ], 200);
     }
 
     function submitCareer(Request $request)
@@ -161,7 +226,7 @@ class Controller extends BaseController
                 'success' => false,
                 'message' => 'Validation failed. Please see errors parameter for details.',
                 'errors' => $validator->errors()
-            ]);
+            ], 422);
         }
 
         $cvUrl = null;
@@ -224,6 +289,6 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Thank you for submitting your career information! We will review your application and get back to you shortly if necessary.',
-        ]);
+        ], 200);
     }
 }

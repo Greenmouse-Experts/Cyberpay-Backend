@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,29 @@ Route::post('/submit/contact/form', [Controller::class, 'submitContact'])->name(
 Route::post('/submit/career', [Controller::class, 'submitCareer'])->name('submitCareer');
 Route::post('/submit/whistle/blower', [Controller::class, 'submitWhistleBlower'])->name('submitWhistleBlower');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/admin/login', [Controller::class, 'admin_login']);
+
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::prefix('/admin')->group(
+        function () {
+            Route::get('/get/contact/form', [AdminController::class, 'getContact'])->name('getContact');
+            Route::post('/delete/contact/form', [AdminController::class, 'deleteContact'])->name('deleteContact');
+            Route::get('/get/career', [AdminController::class, 'getCareer'])->name('getCareer');
+            Route::post('/delete/career', [AdminController::class, 'deleteCareer'])->name('deleteCareer');
+            Route::get('/get/whistle/blower', [AdminController::class, 'getWhistleBlower'])->name('getWhistleBlower');
+            Route::post('/delete/whistle/blower', [AdminController::class, 'deleteWhistleBlower'])->name('deleteWhistleBlower');
+
+            // Blogs
+            Route::get('/blogs', [AdminController::class, 'admin_blogs']);
+            Route::post('/blog/post', [AdminController::class, 'admin_blog_post']);
+            Route::post('/blog/update', [AdminController::class, 'admin_blog_update']);
+            Route::post('/blog/delete', [AdminController::class, 'admin_blog_delete']);
+
+            // FAQs
+            Route::get('/faqs', [AdminController::class, 'admin_faqs']);
+            Route::post('/faqs/post', [AdminController::class, 'admin_faqs_post']);
+            Route::post('/faqs/update', [AdminController::class, 'admin_faqs_update']);
+            Route::post('/faqs/delete', [AdminController::class, 'admin_faqs_delete']);
+        }
+    );
 });
