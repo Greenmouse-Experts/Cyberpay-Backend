@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Career;
 use App\Models\Contact;
@@ -314,6 +315,133 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'FAQ deleted successfully.',
+        ], 200);
+    }
+
+    public function admin_banners()
+    {
+        $banners = Banner::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $banners
+        ], 200);
+    }
+
+    public function admin_banner_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+        $filename = pathinfo($file, PATHINFO_FILENAME);
+
+        $response = cloudinary()->uploadFile($request->image->getRealPath(),
+        [
+            'folder' => config('app.name') . '/banners',
+            "public_id" => $filename,
+            "use_filename" => TRUE
+        ])->getSecurePath();
+
+        Banner::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => $response,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Banner Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_banner_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'banner_id' => ['required', 'numeric', 'exists:banners,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $banner = Banner::find($request->banner_id);
+
+        if (request()->hasFile('image')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image->getRealPath(),
+            [
+                'folder' => config('app.name').'/banners',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($banner->image)
+            {
+                $token = explode('/', $banner->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/banners/'.$token2[0]);
+            }
+        }
+
+        $banner->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => $response ?? $banner->image
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Banner updated successfully!'
+        ], 200);
+    }
+
+    public function admin_banner_delete(Request $request)
+    {
+        $banner = Banner::find($request->banner_id);
+
+        if (!$banner) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Banner not found.',
+            ], 401);
+        }
+
+        if($banner->image)
+        {
+            $token = explode('/', $banner->image);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/banners/'.$token2[0]);
+        }
+
+        $banner->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Banner deleted successfully.',
         ], 200);
     }
 }

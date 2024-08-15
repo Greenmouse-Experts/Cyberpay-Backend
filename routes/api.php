@@ -52,6 +52,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/blog/update', [AdminController::class, 'admin_blog_update']);
             Route::post('/blog/delete', [AdminController::class, 'admin_blog_delete']);
 
+            // Banner
+            Route::get('/banners', [AdminController::class, 'admin_banners']);
+            Route::post('/banner/post', [AdminController::class, 'admin_banner_post']);
+            Route::post('/banner/update', [AdminController::class, 'admin_banner_update']);
+            Route::post('/banner/delete', [AdminController::class, 'admin_banner_delete']);
+
             // FAQs
             Route::get('/faqs', [AdminController::class, 'admin_faqs']);
             Route::post('/faqs/post', [AdminController::class, 'admin_faqs_post']);
@@ -60,3 +66,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
         }
     );
 });
+
+// Blogs
+Route::get('/blogs', [Controller::class, 'get_blogs']);
+
+// FAQs
+Route::get('/faqs', [Controller::class, 'get_faqs']);

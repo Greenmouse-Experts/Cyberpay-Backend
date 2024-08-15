@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BlogPost;
 use App\Models\Career;
 use App\Models\Contact;
+use App\Models\Faq;
 use App\Models\User;
 use App\Models\WhistleBlower;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -290,5 +292,36 @@ class Controller extends BaseController
             'success' => true,
             'message' => 'Thank you for submitting your career information! We will review your application and get back to you shortly if necessary.',
         ], 200);
+    }
+
+    function get_blogs(Request $request)
+    {
+        // Check if blog_id is provided
+        if ($request->has('blog_id')) {
+
+            $blog = BlogPost::find($request->query('blog_id'));
+
+            if (!$blog) {
+                return response()->json(['success' => false, 'message' => "Selected blog does not exist."], 401);
+            }
+
+            $blog->update([
+                'views' => $blog->view + 1
+            ]);
+
+            return response()->json(['success' => true, 'data' => $blog], 200);
+        }
+
+        // If no blog_id is provided, return all blogs
+        $blogs = BlogPost::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $blogs], 200);
+    }
+
+    function get_faqs()
+    {
+        $faqs = Faq::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $faqs], 200);
     }
 }
