@@ -63,6 +63,18 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/faqs/post', [AdminController::class, 'admin_faqs_post']);
             Route::post('/faqs/update', [AdminController::class, 'admin_faqs_update']);
             Route::post('/faqs/delete', [AdminController::class, 'admin_faqs_delete']);
+
+            // Certificate License
+            Route::get('/certificate/licenses', [AdminController::class, 'admin_certificate_licenses']);
+            Route::post('/certificate/license/post', [AdminController::class, 'admin_certificate_license_post']);
+            Route::post('/certificate/license/update', [AdminController::class, 'admin_certificate_license_update']);
+            Route::post('/certificate/license/delete', [AdminController::class, 'admin_certificate_license_delete']);
+
+            // Certification
+            Route::get('/certifications', [AdminController::class, 'admin_certifications']);
+            Route::post('/certification/post', [AdminController::class, 'admin_certification_post']);
+            Route::post('/certification/update', [AdminController::class, 'admin_certification_update']);
+            Route::post('/certification/delete', [AdminController::class, 'admin_certification_delete']);
         }
     );
 });
@@ -72,3 +84,12 @@ Route::get('/blogs', [Controller::class, 'get_blogs']);
 
 // FAQs
 Route::get('/faqs', [Controller::class, 'get_faqs']);
+
+// Banner
+Route::get('/banners', [Controller::class, 'get_banners']);
+
+// Certificate License
+Route::get('/certificate/licenses', [Controller::class, 'get_certificate_licenses']);
+
+// Certification
+Route::get('/certifications', [Controller::class, 'get_certifications']);

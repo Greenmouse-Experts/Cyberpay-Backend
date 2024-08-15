@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Career;
+use App\Models\CertificateLicense;
+use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\User;
@@ -323,5 +326,26 @@ class Controller extends BaseController
         $faqs = Faq::latest()->get();
 
         return response()->json(['success' => true, 'data' => $faqs], 200);
+    }
+
+    function get_banners()
+    {
+        $banners = Banner::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $banners], 200);
+    }
+
+    function get_certificate_licenses()
+    {
+        $certificateLicenses = CertificateLicense::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $certificateLicenses], 200);
+    }
+
+    function get_certifications()
+    {
+        $certifications = Certification::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $certifications], 200);
     }
 }

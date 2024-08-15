@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Career;
+use App\Models\CertificateLicense;
+use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\WhistleBlower;
@@ -442,6 +444,208 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Banner deleted successfully.',
+        ], 200);
+    }
+
+    public function admin_certificate_licenses()
+    {
+        $cls = CertificateLicense::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $cls
+        ], 200);
+    }
+
+    public function admin_certificate_license_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+        $filename = pathinfo($file, PATHINFO_FILENAME);
+
+        $response = cloudinary()->uploadFile($request->image->getRealPath(),
+        [
+            'folder' => config('app.name') . '/certificateLicenses',
+            "public_id" => $filename,
+            "use_filename" => TRUE
+        ])->getSecurePath();
+
+        CertificateLicense::create([
+            'image' => $response,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificate License Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_certificate_license_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'cl_id' => ['required', 'numeric', 'exists:certificate_licenses,id'],
+            'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $certificateLicense = CertificateLicense::find($request->cl_id);
+
+        if (request()->hasFile('image')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image->getRealPath(),
+            [
+                'folder' => config('app.name').'/certificateLicenses',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($certificateLicense->image)
+            {
+                $token = explode('/', $certificateLicense->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/certificateLicenses/'.$token2[0]);
+            }
+        }
+
+        $certificateLicense->update([
+            'image' => $response ?? $certificateLicense->image
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificate License updated successfully!'
+        ], 200);
+    }
+
+    public function admin_certificate_license_delete(Request $request)
+    {
+        $certificateLicense = CertificateLicense::find($request->cl_id);
+
+        if (!$certificateLicense) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Certificate License not found.',
+            ], 401);
+        }
+
+        if($certificateLicense->image)
+        {
+            $token = explode('/', $certificateLicense->image);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/certificateLicenses/'.$token2[0]);
+        }
+
+        $certificateLicense->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificate License deleted successfully.',
+        ], 200);
+    }
+
+
+    public function admin_certifications()
+    {
+        $ertifications = Certification::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ertifications
+        ], 200);
+    }
+
+    public function admin_certification_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'description' => ['required', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        Certification::create([
+            'description' => $request->description
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certification Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_certification_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'certification_id' => ['required', 'numeric', 'exists:certifications,id'],
+            'description' => ['required', 'string']
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $certification = Certification::find($request->certification_id);
+
+        $certification->update([
+            'description' => $request->description
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certification updated successfully!'
+        ], 200);
+    }
+
+    public function admin_certification_delete(Request $request)
+    {
+        $certification = Certification::find($request->certification_id);
+
+        if (!$certification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Certification not found.',
+            ], 401);
+        }
+
+        $certification->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Certification deleted successfully.',
         ], 200);
     }
 }
