@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Career;
+use App\Models\CareerRole;
 use App\Models\CertificateLicense;
 use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
+use App\Models\Office;
 use App\Models\User;
 use App\Models\WhistleBlower;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -348,4 +351,35 @@ class Controller extends BaseController
 
         return response()->json(['success' => true, 'data' => $certifications], 200);
     }
+
+    public function office()
+    {
+        $office = Office::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $office
+        ], 200);
+    }
+
+    public function ads_banners()
+    {
+        $ads = AdsBanner::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ads
+        ], 200);
+    }
+
+    public function career_roles()
+    {
+        $roles = CareerRole::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $roles
+        ], 200);
+    }
+
 }

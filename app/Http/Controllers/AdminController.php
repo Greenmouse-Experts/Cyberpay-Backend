@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Career;
+use App\Models\CareerRole;
 use App\Models\CertificateLicense;
 use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
+use App\Models\Office;
 use App\Models\WhistleBlower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -648,4 +651,261 @@ class AdminController extends Controller
             'message' => 'Certification deleted successfully.',
         ], 200);
     }
+
+
+    public function admin_offices()
+    {
+        $offices = Office::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $offices
+        ], 200);
+    }
+
+    public function admin_office(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'addresses' => 'required|array', // Expecting an array of addresses
+            'addresses.*' => 'required|string|max:255', // Each address should be a string
+            'phones' => 'nullable|array', // Array of phone numbers
+            'phones.*' => 'nullable|string|max:255', // Each phone should be a string
+            'emails' => 'nullable|array', // Array of email addresses
+            'emails.*' => 'nullable|email|max:255', // Each email should be valid
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        // Check if any record exists
+        $existingOffice = Office::first();
+
+        if ($existingOffice) {
+            // Update the existing office record
+            $existingOffice->update($data);
+            $office = $existingOffice;
+        } else {
+            // Create a new office record
+            $office = Office::create($data);
+        }
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => $existingOffice ? 'Office record updated successfully!' : 'Office record created successfully!',
+        ], 200);
+    }
+
+
+    public function admin_ads_banners()
+    {
+        $ads = AdsBanner::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ads
+        ], 200);
+    }
+
+    public function admin_ads_banner_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+        $filename = pathinfo($file, PATHINFO_FILENAME);
+
+        $response = cloudinary()->uploadFile($request->image->getRealPath(),
+        [
+            'folder' => config('app.name') . '/ads-banners',
+            "public_id" => $filename,
+            "use_filename" => TRUE
+        ])->getSecurePath();
+
+        AdsBanner::create([
+            'image' => $response,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ads Banner Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_ads_banner_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'banner_id' => ['required', 'numeric', 'exists:ads_banners,id'],
+            'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $banner = AdsBanner::find($request->banner_id);
+
+        if (request()->hasFile('image')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image->getRealPath(),
+            [
+                'folder' => config('app.name').'/ads-banners',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($banner->image)
+            {
+                $token = explode('/', $banner->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/ads-banners/'.$token2[0]);
+            }
+        }
+
+        $banner->update([
+            'image' => $response ?? $banner->image
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ads Banner updated successfully!'
+        ], 200);
+    }
+
+    public function admin_ads_banner_delete(Request $request)
+    {
+        $banner = AdsBanner::find($request->banner_id);
+
+        if (!$banner) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ads Banner not found.',
+            ], 401);
+        }
+
+        if($banner->image)
+        {
+            $token = explode('/', $banner->image);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/ads-banners/'.$token2[0]);
+        }
+
+        $banner->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ads Banner deleted successfully.',
+        ], 200);
+    }
+
+    public function admin_career_roles()
+    {
+        $roles = CareerRole::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $roles
+        ], 200);
+    }
+
+    public function admin_career_role_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'role' => ['required', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        CareerRole::create([
+            'role' => $request->role
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Career Role Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_career_role_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'role_id' => ['required', 'numeric', 'exists:career_roles,id'],
+            'role' => ['required', 'string']
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $careerRole = CareerRole::find($request->role_id);
+
+        $careerRole->update([
+            'role' => $request->role
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Career Role updated successfully!'
+        ], 200);
+    }
+
+    public function admin_career_role_delete(Request $request)
+    {
+        $careerRole = CareerRole::find($request->role_id);
+
+        if (!$careerRole) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Career Role not found.',
+            ], 401);
+        }
+
+        $careerRole->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Career Role deleted successfully.',
+        ], 200);
+    }
+
 }

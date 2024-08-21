@@ -75,6 +75,28 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/certification/post', [AdminController::class, 'admin_certification_post']);
             Route::post('/certification/update', [AdminController::class, 'admin_certification_update']);
             Route::post('/certification/delete', [AdminController::class, 'admin_certification_delete']);
+
+            // Office
+            Route::get('/offices', [AdminController::class, 'admin_offices']);
+            Route::post('/office', [AdminController::class, 'admin_office']);
+
+            // Ads Banner
+            Route::get('/ads/banners', [AdminController::class, 'admin_ads_banners']);
+            Route::post('/ads/banner/post', [AdminController::class, 'admin_ads_banner_post']);
+            Route::post('/ads/banner/update', [AdminController::class, 'admin_ads_banner_update']);
+            Route::post('/ads/banner/delete', [AdminController::class, 'admin_ads_banner_delete']);
+
+            // Career Role
+            Route::get('/career/role', [AdminController::class, 'admin_career_roles']);
+            Route::post('/career/role/post', [AdminController::class, 'admin_career_role_post']);
+            Route::post('/career/role/update', [AdminController::class, 'admin_career_role_update']);
+            Route::post('/career/role/delete', [AdminController::class, 'admin_career_role_delete']);
+
+            // Career Role
+            Route::get('/career/role', [AdminController::class, 'admin_career_roles']);
+            Route::post('/career/role/post', [AdminController::class, 'admin_career_role_post']);
+            Route::post('/career/role/update', [AdminController::class, 'admin_career_role_update']);
+            Route::post('/career/role/delete', [AdminController::class, 'admin_career_role_delete']);
         }
     );
 });
@@ -93,3 +115,12 @@ Route::get('/certificate/licenses', [Controller::class, 'get_certificate_license
 
 // Certification
 Route::get('/certifications', [Controller::class, 'get_certifications']);
+
+// Office
+Route::get('/office', [Controller::class, 'office']);
+
+// Ads Banner
+Route::get('/ads/banners', [Controller::class, 'ads_banners']);
+
+// Career Role
+Route::get('/career/role', [Controller::class, 'career_roles']);
