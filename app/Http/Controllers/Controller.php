@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
+use App\Models\Breadcrumb;
 use App\Models\Career;
 use App\Models\CareerRole;
 use App\Models\CertificateLicense;
@@ -12,6 +13,8 @@ use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
+use App\Models\People;
+use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -381,5 +384,36 @@ class Controller extends BaseController
             'data' => $roles
         ], 200);
     }
+
+    public function breadcrumbs()
+    {
+        $breadcrumb = Breadcrumb::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $breadcrumb
+        ], 200);
+    }
+
+    public function peoples()
+    {
+        $peoples = People::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $peoples
+        ], 200);
+    }
+
+    public function stories()
+    {
+        $stories = Story::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $stories
+        ], 200);
+    }
+
 
 }

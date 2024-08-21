@@ -92,11 +92,23 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/career/role/update', [AdminController::class, 'admin_career_role_update']);
             Route::post('/career/role/delete', [AdminController::class, 'admin_career_role_delete']);
 
-            // Career Role
-            Route::get('/career/role', [AdminController::class, 'admin_career_roles']);
-            Route::post('/career/role/post', [AdminController::class, 'admin_career_role_post']);
-            Route::post('/career/role/update', [AdminController::class, 'admin_career_role_update']);
-            Route::post('/career/role/delete', [AdminController::class, 'admin_career_role_delete']);
+            // BreadCrumb
+            Route::get('/breadcrumbs', [AdminController::class, 'admin_breadcrumbs']);
+            Route::post('/breadcrumb/post', [AdminController::class, 'admin_breadcrumb_post']);
+            Route::post('/breadcrumb/update', [AdminController::class, 'admin_breadcrumb_update']);
+            Route::post('/breadcrumb/delete', [AdminController::class, 'admin_breadcrumb_delete']);
+
+            // Story
+            Route::get('/stories', [AdminController::class, 'admin_stories']);
+            Route::post('/story/post', [AdminController::class, 'admin_story_post']);
+            Route::post('/story/update', [AdminController::class, 'admin_story_update']);
+            Route::post('/story/delete', [AdminController::class, 'admin_story_delete']);
+
+            // People
+            Route::get('/peoples', [AdminController::class, 'admin_peoples']);
+            Route::post('/people/post', [AdminController::class, 'admin_people_post']);
+            Route::post('/people/update', [AdminController::class, 'admin_people_update']);
+            Route::post('/people/delete', [AdminController::class, 'admin_people_delete']);
         }
     );
 });
@@ -124,3 +136,12 @@ Route::get('/ads/banners', [Controller::class, 'ads_banners']);
 
 // Career Role
 Route::get('/career/role', [Controller::class, 'career_roles']);
+
+// BreadCrumb
+Route::get('/breadcrumbs', [Controller::class, 'breadcrumbs']);
+
+// Story
+Route::get('/stories', [Controller::class, 'stories']);
+
+// People
+Route::get('/peoples', [Controller::class, 'peoples']);

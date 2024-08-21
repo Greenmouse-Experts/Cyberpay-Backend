@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
+use App\Models\Breadcrumb;
 use App\Models\Career;
 use App\Models\CareerRole;
 use App\Models\CertificateLicense;
@@ -12,6 +13,8 @@ use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
+use App\Models\People;
+use App\Models\Story;
 use App\Models\WhistleBlower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -908,4 +911,309 @@ class AdminController extends Controller
         ], 200);
     }
 
+
+    public function admin_breadcrumbs()
+    {
+        $breadcrumb = Breadcrumb::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $breadcrumb
+        ], 200);
+    }
+
+    public function admin_breadcrumb_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['required', 'string'],
+            'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'link' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+        $filename = pathinfo($file, PATHINFO_FILENAME);
+
+        $response = cloudinary()->uploadFile($request->image->getRealPath(),
+        [
+            'folder' => config('app.name') . '/breadcrumb',
+            "public_id" => $filename,
+            "use_filename" => TRUE
+        ])->getSecurePath();
+
+        Breadcrumb::create([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'image' => $response,
+            'link' => $request->link,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Breadcrumb Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_breadcrumb_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'breadcrumb_id' => ['required', 'numeric', 'exists:breadcrumbs,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['required', 'string'],
+            'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+            'link' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $breadcrumb = Breadcrumb::find($request->breadcrumb_id);
+
+        if (request()->hasFile('image')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image->getRealPath(),
+            [
+                'folder' => config('app.name').'/breadcrumb',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($breadcrumb->image)
+            {
+                $token = explode('/', $breadcrumb->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/breadcrumb/'.$token2[0]);
+            }
+        }
+
+        $breadcrumb->update([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'image' => $response ?? $breadcrumb->image,
+            'link' => $request->link
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Blog updated successfully!'
+        ], 200);
+    }
+
+    public function admin_breadcrumb_delete(Request $request)
+    {
+        $breadcrumb = Breadcrumb::find($request->breadcrumb_id);
+
+        if (!$breadcrumb) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Breadcrumb not found.',
+            ], 401);
+        }
+
+        if($breadcrumb->image)
+        {
+            $token = explode('/', $breadcrumb->image);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/breadcrumb/'.$token2[0]);
+        }
+
+        $breadcrumb->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Breadcrumb deleted successfully.',
+        ], 200);
+    }
+
+
+    public function admin_peoples()
+    {
+        $peoples = People::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $peoples
+        ], 200);
+    }
+
+    public function admin_people_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'title' => ['required', 'string'],
+            'subtitle' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        People::create([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'People Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_people_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'people_id' => ['required', 'numeric', 'exists:people,id'],
+            'title' => ['required', 'string'],
+            'subtitle' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $people = People::find($request->people_id);
+
+        $people->update([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'People updated successfully!'
+        ], 200);
+    }
+
+    public function admin_people_delete(Request $request)
+    {
+        $people = People::find($request->people_id);
+
+        if (!$people) {
+            return response()->json([
+                'success' => false,
+                'message' => 'People not found.',
+            ], 401);
+        }
+
+        $people->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'People deleted successfully.',
+        ], 200);
+    }
+
+
+    public function admin_stories()
+    {
+        $stories = Story::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $stories
+        ], 200);
+    }
+
+    public function admin_story_post(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'title' => ['required', 'string'],
+            'subtitle' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        Story::create([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Story Added Successfully!'
+        ], 200);
+    }
+
+    public function admin_story_update(Request $request)
+    {
+        //Validate Request
+        $validator = Validator::make(request()->all(), [
+            'story_id' => ['required', 'numeric', 'exists:stories,id'],
+            'title' => ['required', 'string'],
+            'subtitle' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $story = Story::find($request->story_id);
+
+        $story->update([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Story updated successfully!'
+        ], 200);
+    }
+
+    public function admin_story_delete(Request $request)
+    {
+        $story = Story::find($request->story_id);
+
+        if (!$story) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Story not found.',
+            ], 401);
+        }
+
+        $story->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Story deleted successfully.',
+        ], 200);
+    }
 }
