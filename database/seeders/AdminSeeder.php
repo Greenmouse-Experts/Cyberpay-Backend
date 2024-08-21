@@ -20,6 +20,7 @@ class AdminSeeder extends Seeder
             'email' => 'admin@cyberpay.net.ng',
             'email_verified_at' => now(),
             'password' => bcrypt('Password'),
+            'role' => 'super-admin'
         ]);
     }
 }

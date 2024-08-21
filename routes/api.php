@@ -109,6 +109,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/people/post', [AdminController::class, 'admin_people_post']);
             Route::post('/people/update', [AdminController::class, 'admin_people_update']);
             Route::post('/people/delete', [AdminController::class, 'admin_people_delete']);
+
+            Route::get('/sub-admins', [AdminController::class, 'fetchSubAdmins']);
+            Route::post('/sub-admin/create', [AdminController::class, 'addSubAdmin']);
+            Route::post('/sub-admin/update', [AdminController::class, 'updateSubAdmin']);
+            Route::post('/sub-admin/delete', [AdminController::class, 'deleteSubAdmin']);
+            Route::post('/sub-admin/toggle-status', [AdminController::class, 'toggleSubAdminStatus']);
+            Route::post('/sub-admin/resend-login', [AdminController::class, 'resendLoginDetails']);
         }
     );
 });

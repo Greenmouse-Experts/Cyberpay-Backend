@@ -65,6 +65,14 @@ class Controller extends BaseController
             ], 401);
         }
 
+        if($admin->status == 'inactive')
+        {
+            return response()->json([
+                'success' => false,
+                'message' => "Account deactivated, kindly contact the site administrator",
+            ], 401);
+        }
+
         // authentication attempt
         if (auth()->attempt($input, $request->get('remember'))) {
 

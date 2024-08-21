@@ -15,10 +15,13 @@ use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
 use App\Models\Story;
+use App\Models\User;
 use App\Models\WhistleBlower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Mail;
+use Str;
 
 class AdminController extends Controller
 {
@@ -1215,5 +1218,130 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Story deleted successfully.',
         ], 200);
+    }
+
+
+    // Fetch Sub Admins
+    public function fetchSubAdmins()
+    {
+        $subAdmins = User::where('role', '!=', 'super-admin')->orderBy('created_at', 'desc')->get();
+        return response()->json(['success' => true, 'data' => $subAdmins], 200);
+    }
+
+    // Add Sub Admin
+    public function addSubAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'role' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        }
+
+        $password = Str::random(10);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($password),
+            'email_verified_at' => now(),
+            'role' => $request->role,
+        ]);
+
+        /** Store information to include in mail in $data as an array */
+        $data = array(
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $password,
+            'role' => $request->role,
+            'created_at' => now(),
+        );
+
+        /** Send message to the sub admin */
+        Mail::send('emails.subAdminLoginDetailsNotification', $data, function ($m) use ($data) {
+            $m->to($data['email'])->subject(config('app.name').' - Your Sub-Admin Account');
+        });
+
+
+        return response()->json(['success' => true, 'message' => 'Subadmin added successfully.'], 200);
+    }
+
+    // Update Sub Admin
+    public function updateSubAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'subadmin_id' => 'required|exists:users,id',
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email,' . $request->subadmin_id,
+            'role' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        }
+
+        $subAdmin = User::findOrFail($request->subadmin_id);
+        $subAdmin->update($request->only('name', 'email', 'role'));
+
+        return response()->json(['success' => true, 'message' => 'Subadmin updated successfully.'], 200);
+    }
+
+    // Delete Sub Admin
+    public function deleteSubAdmin(Request $request)
+    {
+        $subAdmin = User::findOrFail($request->subadmin_id);
+        $subAdmin->delete();
+
+        return response()->json(['success' => true, 'message' => 'Subadmin deleted successfully.'], 200);
+    }
+
+    // Toggle Sub-Admin Status
+    public function toggleSubAdminStatus(Request $request)
+    {
+        $subAdmin = User::findOrFail($request->subadmin_id);
+        $newStatus = $subAdmin->status === 'active' ? 'inactive' : 'active';
+        $subAdmin->update(['status' => $newStatus]);
+
+        return response()->json(['success' => true, 'message' => "Sub-Admin {$newStatus} successfully."], 200);
+    }
+
+    // Resend Login Details
+    public function resendLoginDetails(Request $request)
+    {
+        $subAdmin = User::findOrFail($request->subadmin_id);
+        $newPassword = Str::random(10);
+        $subAdmin->update(['password' => bcrypt($newPassword)]);
+
+        /** Store information to include in mail in $data as an array */
+        $data = array(
+            'name' => $subAdmin->name,
+            'email' => $subAdmin->email,
+            'password' => $newPassword,
+            'role' => $subAdmin->role,
+            'created_at' => now(),
+        );
+
+        /** Send message to the sub admin */
+        Mail::send('emails.subAdminLoginDetailsNotification', $data, function ($m) use ($data) {
+            $m->to($data['email'])->subject(config('app.name').' - Your New Login Details');
+        });
+
+
+        return response()->json(['success' => true, 'message' => 'Login details resent successfully.'], 200);
     }
 }
