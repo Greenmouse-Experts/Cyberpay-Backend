@@ -14,6 +14,7 @@ use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
+use App\Models\Seo;
 use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
@@ -423,5 +424,13 @@ class Controller extends BaseController
         ], 200);
     }
 
+    public function seos()
+    {
+        $seos = Seo::latest()->get();
 
+        return response()->json([
+            'success' => true,
+            'data' => $seos
+        ], 200);
+    }
 }

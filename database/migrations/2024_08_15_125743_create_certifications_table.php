@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('certifications', function (Blueprint $table) {
             $table->id();
+            $table->text('title');
             $table->text('description');
             $table->timestamps();
         });

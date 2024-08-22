@@ -14,6 +14,7 @@ use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
+use App\Models\Seo;
 use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
@@ -22,9 +23,28 @@ use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Mail;
 use Str;
+use App\Services\GoogleAnalyticsService;
 
 class AdminController extends Controller
 {
+    protected $analyticsService;
+
+    public function __construct(GoogleAnalyticsService $analyticsService)
+    {
+        $this->analyticsService = $analyticsService;
+    }
+
+
+    public function dashboard()
+    {
+        $analyticsData = $this->analyticsService->getVisitors();
+
+        return response()->json([
+            'success' => true,
+            'data' => $analyticsData,
+        ], 200);
+    }
+
     public function getContact()
     {
         $contactUs = Contact::latest()->get();
@@ -590,7 +610,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'description' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string']
         ]);
 
         if ($validator->fails()) {
@@ -602,6 +623,7 @@ class AdminController extends Controller
         }
 
         Certification::create([
+            'title' => $request->title,
             'description' => $request->description
         ]);
 
@@ -616,6 +638,7 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'certification_id' => ['required', 'numeric', 'exists:certifications,id'],
+            'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string']
         ]);
 
@@ -630,6 +653,7 @@ class AdminController extends Controller
         $certification = Certification::find($request->certification_id);
 
         $certification->update([
+            'title' => $request->title,
             'description' => $request->description
         ]);
 
@@ -1343,5 +1367,127 @@ class AdminController extends Controller
 
 
         return response()->json(['success' => true, 'message' => 'Login details resent successfully.'], 200);
+    }
+
+
+    public function admin_seos()
+    {
+        $seos = Seo::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $seos
+        ], 200);
+    }
+
+    public function admin_seo_post(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'pageName' => ['required', 'string'], // No unique rule here
+            'setTitle' => ['required', 'string'],
+            'setDescription' => ['required', 'string'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Check if a record with the same pageName exists
+        $seo = Seo::where('pageName', $request->pageName)->first();
+
+        if ($seo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'SEO with this page name already exists.'
+            ], 401);
+        } else {
+            // Create a new SEO record
+            Seo::create([
+                'pageName' => $request->pageName,
+                'setTitle' => $request->setTitle,
+                'setDescription' => $request->setDescription
+            ]);
+
+            $message = 'SEO Added Successfully!';
+        }
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => $message
+        ], 200);
+    }
+
+    public function admin_seo_update(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'seo_id' => ['required', 'numeric', 'exists:seos,id'], // Ensure seo_id exists in the database
+            'pageName' => ['required', 'string'],
+            'setTitle' => ['required', 'string'],
+            'setDescription' => ['required', 'string'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Find the existing SEO record by ID
+        $seo = Seo::find($request->seo_id);
+
+        // Check if the pageName already exists in the database for a different seo_id
+        $existingSeo = Seo::where('pageName', $request->pageName)
+                            ->where('id', '!=', $request->seo_id)
+                            ->first();
+
+        if ($existingSeo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The pageName already exists for another SEO record.',
+            ], 401);
+        }
+
+        // Update the SEO record
+        $seo->update([
+            'pageName' => $request->pageName,
+            'setTitle' => $request->setTitle,
+            'setDescription' => $request->setDescription
+        ]);
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => 'SEO updated successfully!'
+        ], 200);
+    }
+
+    public function admin_seo_delete(Request $request)
+    {
+        $seo = Seo::find($request->seo_id);
+
+        if (!$seo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'SEO not found.',
+            ], 401);
+        }
+
+        $seo->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'SEO deleted successfully.',
+        ], 200);
     }
 }

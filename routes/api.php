@@ -39,6 +39,8 @@ Route::post('/admin/login', [Controller::class, 'admin_login']);
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::prefix('/admin')->group(
         function () {
+            Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
             Route::get('/get/contact/form', [AdminController::class, 'getContact'])->name('getContact');
             Route::post('/delete/contact/form', [AdminController::class, 'deleteContact'])->name('deleteContact');
             Route::get('/get/career', [AdminController::class, 'getCareer'])->name('getCareer');
@@ -116,6 +118,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/sub-admin/delete', [AdminController::class, 'deleteSubAdmin']);
             Route::post('/sub-admin/toggle-status', [AdminController::class, 'toggleSubAdminStatus']);
             Route::post('/sub-admin/resend-login', [AdminController::class, 'resendLoginDetails']);
+
+            // SEO
+            Route::get('/seos', [AdminController::class, 'admin_seos']);
+            Route::post('/seo/post', [AdminController::class, 'admin_seo_post']);
+            Route::post('/seo/update', [AdminController::class, 'admin_seo_update']);
+            Route::post('/seo/delete', [AdminController::class, 'admin_seo_delete']);
+
         }
     );
 });
@@ -152,3 +161,6 @@ Route::get('/stories', [Controller::class, 'stories']);
 
 // People
 Route::get('/peoples', [Controller::class, 'peoples']);
+
+// SEO
+Route::get('/seos', [Controller::class, 'seos']);
