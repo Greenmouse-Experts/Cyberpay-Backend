@@ -37,11 +37,29 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $analyticsData = $this->analyticsService->getVisitors();
+        $getVisitors = $this->analyticsService->getVisitors();
+        $getBounceRate = $this->analyticsService->getBounceRate();
+        $getUserBehavior = $this->analyticsService->getUserBehavior();
+        // $getConversions = $this->analyticsService->getConversions();
+        $getComprehensiveReport = $this->analyticsService->getComprehensiveReport();
+        $getFilteredReport = $this->analyticsService->getFilteredReport();
+        $getBasicReport = $this->analyticsService->getBasicReport();
+        $getBasicAnalyticsData = $this->analyticsService->getBasicAnalyticsData();
+
+        $data = [
+            // 'getVisitors' => $getVisitors,
+            // 'getBounceRate' => $getBounceRate,
+            // 'getUserBehavior' => $getUserBehavior,
+            // 'getConversions' => $getConversions
+            // 'getComprehensiveReport' => $getComprehensiveReport,
+            // 'getFilteredReport' => $getFilteredReport,
+            // 'getBasicReport' => $getBasicReport
+            'getBasicAnalyticsData' => $getBasicAnalyticsData
+        ];
 
         return response()->json([
             'success' => true,
-            'data' => $analyticsData,
+            'data' => $data,
         ], 200);
     }
 
