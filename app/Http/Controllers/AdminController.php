@@ -25,6 +25,7 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Mail;
 use Str;
 use App\Services\GoogleAnalyticsService;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -36,26 +37,26 @@ class AdminController extends Controller
     }
 
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $getVisitors = $this->analyticsService->getVisitors();
-        $getBounceRate = $this->analyticsService->getBounceRate();
-        $getUserBehavior = $this->analyticsService->getUserBehavior();
-        // $getConversions = $this->analyticsService->getConversions();
-        $getComprehensiveReport = $this->analyticsService->getComprehensiveReport();
-        $getFilteredReport = $this->analyticsService->getFilteredReport();
-        $getBasicReport = $this->analyticsService->getBasicReport();
-        $getBasicAnalyticsData = $this->analyticsService->getBasicAnalyticsData();
+        $startD = Carbon::now()->startOfYear()->format('Y-m-d');
+        $endD = Carbon::now()->endOfYear()->format('Y-m-d');
 
+        // Get filters from the request
+        $startDate = $request->input('startDate') ?? $startD; // Default to start of the year
+        $endDate = $request->input('endDate') ?? $endD; // Default to end of the year
+        $city = 'city'; // Optional city filter
+
+        // Pass the dynamic parameters to your service methods
+        $getVisitors = $this->analyticsService->getVisitors( $startDate, $endDate, $city);
+        $getBounceRate = $this->analyticsService->getBounceRate($startDate, $endDate, $city);
+        $getUserBehavior = $this->analyticsService->getUserBehavior($startDate, $endDate);
+
+        // Prepare the response data
         $data = [
-            // 'getVisitors' => $getVisitors,
-            // 'getBounceRate' => $getBounceRate,
-            // 'getUserBehavior' => $getUserBehavior,
-            // 'getConversions' => $getConversions
-            // 'getComprehensiveReport' => $getComprehensiveReport,
-            // 'getFilteredReport' => $getFilteredReport,
-            // 'getBasicReport' => $getBasicReport
-            'getBasicAnalyticsData' => $getBasicAnalyticsData
+            'getVisitors' => $getVisitors,
+            'getBounceRate' => $getBounceRate,
+            'getUserBehavior' => $getUserBehavior,
         ];
 
         return response()->json([
@@ -63,6 +64,7 @@ class AdminController extends Controller
             'data' => $data,
         ], 200);
     }
+
 
     public function getContact()
     {
