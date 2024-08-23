@@ -15,6 +15,7 @@ use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
 use App\Models\Seo;
+use App\Models\Solution;
 use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
@@ -1506,6 +1507,174 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'SEO deleted successfully.',
+        ], 200);
+    }
+
+
+    public function admin_solutions()
+    {
+        $solutions = Solution::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $solutions
+        ], 200);
+    }
+
+    public function admin_solution_post(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'pageName' => ['required', 'string'], // No unique rule here
+            'setImage' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'setDescription' => ['required'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Check if a record with the same pageName exists
+        $solution = Solution::where('pageName', $request->pageName)->first();
+
+        if ($solution) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solution page with this page name already exists.'
+            ], 401);
+        } else {
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Create a new Solution record
+            Solution::create([
+                'pageName' => $request->pageName,
+                'setImage' => $response,
+                'setDescription' => $request->setDescription
+            ]);
+
+            $message = 'Solution Page Added Successfully!';
+        }
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => $message
+        ], 200);
+    }
+
+    public function admin_solution_update(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'solution_id' => ['required', 'numeric', 'exists:solutions,id'], // Ensure solution_id exists in the database
+            'pageName' => ['required', 'string'],
+            'setImage' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'setDescription' => ['required'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Find the existing solution record by ID
+        $solution = Solution::find($request->solution_id);
+
+        // Check if the pageName already exists in the database for a different solution_id
+        $existingSolution = Solution::where('pageName', $request->pageName)
+                            ->where('id', '!=', $request->solution_id)
+                            ->first();
+
+        if ($existingSolution) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The pageName already exists for another Solution page record.',
+            ], 401);
+        }
+
+        if (request()->hasFile('setImage')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name').'/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($solution->image)
+            {
+                $token = explode('/', $solution->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/solutions/'.$token2[0]);
+            }
+        }
+
+        // Update the SEO record
+        $solution->update([
+            'pageName' => $request->pageName,
+            'setImage' => $response ?? $solution->setImage,
+            'setDescription' => $request->setDescription
+        ]);
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Solution page updated successfully!'
+        ], 200);
+    }
+
+    public function toggleSolutionPageStatus(Request $request)
+    {
+        $solution = Solution::findOrFail($request->solution_id);
+        $newStatus = $solution->status === 'published' ? 'unpublished' : 'published';
+        $solution->update(['status' => $newStatus]);
+
+        return response()->json(['success' => true, 'message' => "Solution page {$newStatus} successfully."], 200);
+    }
+
+    public function admin_solution_delete(Request $request)
+    {
+        $solution = Solution::find($request->solution_id);
+
+        if (!$solution) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solution page not found.',
+            ], 401);
+        }
+
+        if($solution->setImage)
+        {
+            $token = explode('/', $solution->setImage);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/solutions/'.$token2[0]);
+        }
+
+        $solution->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solution page deleted successfully.',
         ], 200);
     }
 }

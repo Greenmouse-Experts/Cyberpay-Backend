@@ -125,6 +125,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/seo/update', [AdminController::class, 'admin_seo_update']);
             Route::post('/seo/delete', [AdminController::class, 'admin_seo_delete']);
 
+            // Solutions
+            Route::get('/solutions', [AdminController::class, 'admin_solutions']);
+            Route::post('/solution/post', [AdminController::class, 'admin_solution_post']);
+            Route::post('/solution/update', [AdminController::class, 'admin_solution_update']);
+            Route::post('/solution/toggle-status', [AdminController::class, 'toggleSolutionPageStatus']);
+            Route::post('/solution/delete', [AdminController::class, 'admin_solution_delete']);
         }
     );
 });
