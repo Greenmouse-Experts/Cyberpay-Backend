@@ -15,9 +15,11 @@ use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
+use App\Models\PrivacyPolicy;
 use App\Models\Seo;
 use App\Models\Solution;
 use App\Models\Story;
+use App\Models\TermCondition;
 use App\Models\User;
 use App\Models\WhistleBlower;
 use App\Models\WhyCyberpay;
@@ -1839,11 +1841,113 @@ class AdminController extends Controller
             ], 200);
         } else {
             // Create a new record
-            $why = WhyCyberpay::create($data);
+            WhyCyberpay::create($data);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Why Cyberpay record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_privacy_policies()
+    {
+        $policies = PrivacyPolicy::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $policies
+        ], 200);
+    }
+
+    public function admin_privacy_policy(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|json',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        $privacyPolicy = PrivacyPolicy::first();  // Assuming there's only one record
+
+        if ($privacyPolicy) {
+
+            // Update the existing record
+            $privacyPolicy->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Privacy Policies record updated successfully!'
+            ], 200);
+        } else {
+            // Create a new record
+            PrivacyPolicy::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Privacy Policies record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_terms_conditions()
+    {
+        $tc = TermCondition::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $tc
+        ], 200);
+    }
+
+    public function admin_term_condition(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|json',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        $tc = TermCondition::first();  // Assuming there's only one record
+
+        if ($tc) {
+
+            // Update the existing record
+            $tc->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Terms and Conditions record updated successfully!'
+            ], 200);
+        } else {
+            // Create a new record
+            TermCondition::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Terms and Conditions record created successfully!',
             ], 201);
         }
     }

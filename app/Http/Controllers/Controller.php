@@ -15,8 +15,10 @@ use App\Models\Contact;
 use App\Models\Faq;
 use App\Models\Office;
 use App\Models\People;
+use App\Models\PrivacyPolicy;
 use App\Models\Seo;
 use App\Models\Story;
+use App\Models\TermCondition;
 use App\Models\User;
 use App\Models\WhistleBlower;
 use App\Models\WhyCyberpay;
@@ -453,6 +455,26 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'data' => $why
+        ], 200);
+    }
+
+    public function privacy_policies()
+    {
+        $policies = PrivacyPolicy::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $policies
+        ], 200);
+    }
+
+    public function terms_conditions()
+    {
+        $tc = TermCondition::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $tc
         ], 200);
     }
 }

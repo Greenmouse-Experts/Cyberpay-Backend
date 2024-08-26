@@ -139,6 +139,14 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             // Why Cyberpay
             Route::get('/why/cyberpay', [AdminController::class, 'admin_why_cyberpays']);
             Route::post('/why', [AdminController::class, 'admin_why']);
+
+            // Terms and Conditions
+            Route::get('/terms/conditions', [AdminController::class, 'admin_terms_conditions']);
+            Route::post('/term/condition', [AdminController::class, 'admin_term_condition']);
+
+            // Privacy Policies
+            Route::get('/privacy/policies', [AdminController::class, 'admin_privacy_policies']);
+            Route::post('/privacy/policy', [AdminController::class, 'admin_privacy_policy']);
         }
     );
 });
@@ -182,5 +190,11 @@ Route::get('/seos', [Controller::class, 'seos']);
 // About
 Route::get('/abouts', [Controller::class, 'abouts']);
 
-// SEO
+// Why Cyberpay
 Route::get('/why/cyberpay', [Controller::class, 'why_cyberpay']);
+
+// Terms and Conditions
+Route::get('/terms/conditions', [AdminController::class, 'terms_conditions']);
+
+// Privacy Policies
+Route::get('/privacy/policies', [AdminController::class, 'privacy_policies']);
