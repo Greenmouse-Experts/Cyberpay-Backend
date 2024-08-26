@@ -131,6 +131,14 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             Route::post('/solution/update', [AdminController::class, 'admin_solution_update']);
             Route::post('/solution/toggle-status', [AdminController::class, 'toggleSolutionPageStatus']);
             Route::post('/solution/delete', [AdminController::class, 'admin_solution_delete']);
+
+            // About
+            Route::get('/abouts', [AdminController::class, 'admin_abouts']);
+            Route::post('/about', [AdminController::class, 'admin_about']);
+
+            // Why Cyberpay
+            Route::get('/why/cyberpay', [AdminController::class, 'admin_why_cyberpays']);
+            Route::post('/why', [AdminController::class, 'admin_why']);
         }
     );
 });
@@ -170,3 +178,9 @@ Route::get('/peoples', [Controller::class, 'peoples']);
 
 // SEO
 Route::get('/seos', [Controller::class, 'seos']);
+
+// About
+Route::get('/abouts', [Controller::class, 'abouts']);
+
+// SEO
+Route::get('/why/cyberpay', [Controller::class, 'why_cyberpay']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\About;
 use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
@@ -19,6 +20,7 @@ use App\Models\Solution;
 use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
+use App\Models\WhyCyberpay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -39,6 +41,12 @@ class AdminController extends Controller
 
     public function dashboard(Request $request)
     {
+        $totalBanners = Banner::get()->count();
+        $totalBreadcrumb = Breadcrumb::get()->count();
+        $totalCareers = Career::get()->count();
+        $totalContacts = Contact::get()->count();
+        $totalCertification = Certification::get()->count();
+
         $startD = Carbon::now()->startOfYear()->format('Y-m-d');
         $endD = Carbon::now()->endOfYear()->format('Y-m-d');
 
@@ -54,6 +62,11 @@ class AdminController extends Controller
 
         // Prepare the response data
         $data = [
+            'totalBanners' => $totalBanners,
+            'totalBreadcrumb' => $totalBreadcrumb,
+            'totalCareers' => $totalCareers,
+            'totalContacts' => $totalContacts,
+            'totalCertification' => $totalCertification,
             'getVisitors' => $getVisitors,
             'getBounceRate' => $getBounceRate,
             'getUserBehavior' => $getUserBehavior,
@@ -1678,5 +1691,160 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Solution page deleted successfully.',
         ], 200);
+    }
+
+    public function admin_abouts()
+    {
+        $about = About::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $about
+        ], 200);
+    }
+
+    public function admin_about(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image_url' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+            'caption' => 'required|string|max:255',
+            'quick_facts' => 'required|string',
+            'vision_title' => 'nullable|string|max:255',
+            'vision_description' => 'nullable|string',
+            'mission_title' => 'nullable|string|max:255',
+            'mission_description' => 'nullable|string',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        // Check if any record exists
+        $existingAbout = About::first();
+
+        if($request->hasfile('image_url'))
+        {
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image_url->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image_url->getRealPath(),
+            [
+                'folder' => config('app.name') . '/about',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            $data['image_url'] = $response;
+        }
+
+        if ($existingAbout) {
+            if(!$request->hasfile('image_url'))
+            {
+                $data['image_url'] = $existingAbout->image_url;
+            }
+
+            // Update the existing about record
+            $existingAbout->update($data);
+            $existingAbout;
+        } else {
+            // Create a new about record
+            About::create($data);
+        }
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => $existingAbout ? 'Office record updated successfully!' : 'Office record created successfully!',
+        ], 200);
+    }
+
+
+    public function admin_why_cyberpays()
+    {
+        $why = WhyCyberpay::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $why
+        ], 200);
+    }
+
+    public function admin_why(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'image_url' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+            'caption' => 'required|string|max:255',
+            'description' => 'required|string',
+            'benefitCaption' => 'nullable|string|max:255',
+            'benefitList' => 'nullable|json',
+            'why_us' => 'nullable|string',
+            'benefitMerchantCaption' => 'nullable|string|max:255',
+            'benefitMerchantList' => 'nullable|json',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        // Handle the image upload if present
+        if ($request->hasFile('image_url')) {
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->image_url->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->image_url->getRealPath(), [
+                'folder' => config('app.name') . '/whyCyberpay',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            $data['image_url'] = $response;
+        }
+
+        // Check if the `Why Cyberpay` record already exists
+        $why = WhyCyberpay::first();  // Assuming there's only one record
+
+        if ($why) {
+            if(!$request->hasfile('image_url'))
+            {
+                $data['image_url'] = $why->image_url;
+            }
+
+            // Update the existing record
+            $why->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Why Cyberpay record updated successfully!'
+            ], 200);
+        } else {
+            // Create a new record
+            $why = WhyCyberpay::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Why Cyberpay record created successfully!',
+            ], 201);
+        }
     }
 }

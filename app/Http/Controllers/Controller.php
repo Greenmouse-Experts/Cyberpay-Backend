@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\About;
 use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
@@ -18,6 +19,7 @@ use App\Models\Seo;
 use App\Models\Story;
 use App\Models\User;
 use App\Models\WhistleBlower;
+use App\Models\WhyCyberpay;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -431,6 +433,26 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'data' => $seos
+        ], 200);
+    }
+
+    public function abouts()
+    {
+        $about = About::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $about
+        ], 200);
+    }
+
+    public function why_cyberpay()
+    {
+        $why = WhyCyberpay::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $why
         ], 200);
     }
 }

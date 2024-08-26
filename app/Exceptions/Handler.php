@@ -75,14 +75,14 @@ class Handler extends ExceptionHandler
                 ]);
             }
         });
-        $this->renderable(function (ErrorException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response([
-                    'status' => 'false',
-                    'message' => 'Failed to get service'
-                ]);
-            }
-        });
+        // $this->renderable(function (ErrorException $e, Request $request) {
+        //     if ($request->is('api/*')) {
+        //         return response([
+        //             'status' => 'false',
+        //             'message' => 'Failed to get service'
+        //         ]);
+        //     }
+        // });
         $this->renderable(function (MethodNotAllowedHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response([
