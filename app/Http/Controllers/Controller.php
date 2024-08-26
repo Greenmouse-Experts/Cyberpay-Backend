@@ -82,13 +82,13 @@ class Controller extends BaseController
         if (auth()->attempt($input, $request->get('remember'))) {
 
             // Get the old token
-            $oldToken = $admin->tokens->where('name', 'API TOKEN')->first();
+            // $oldToken = $admin->tokens->where('name', 'API TOKEN')->first();
 
-            if($oldToken)
-            {
-                // Revoke the old token
-                $oldToken->delete();
-            }
+            // if($oldToken)
+            // {
+            //     // Revoke the old token
+            //     $oldToken->delete();
+            // }
 
             $token = $admin->createToken("API TOKEN")->plainTextToken;
 
