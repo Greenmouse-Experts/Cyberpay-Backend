@@ -194,7 +194,7 @@ Route::get('/abouts', [Controller::class, 'abouts']);
 Route::get('/why/cyberpay', [Controller::class, 'why_cyberpay']);
 
 // Terms and Conditions
-Route::get('/terms/conditions', [AdminController::class, 'terms_conditions']);
+Route::get('/terms/conditions', [Controller::class, 'terms_conditions']);
 
 // Privacy Policies
-Route::get('/privacy/policies', [AdminController::class, 'privacy_policies']);
+Route::get('/privacy/policies', [Controller::class, 'privacy_policies']);
