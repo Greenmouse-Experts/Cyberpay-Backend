@@ -211,7 +211,7 @@ class Controller extends BaseController
             'description' => $request->description ?? 'Annonymous',
             'document_url' => $documentUrl,
             'created_at' => now(),
-            'admin' => 'support@cyberpay.net.ng',
+            'admin' => 'whistleblowing@cyberspace.net.ng',
         ];
 
         /** Send message to the admin */
