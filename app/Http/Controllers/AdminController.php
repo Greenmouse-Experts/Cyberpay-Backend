@@ -7,20 +7,30 @@ use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Breadcrumb;
+use App\Models\BulkSms;
 use App\Models\Career;
 use App\Models\CareerRole;
 use App\Models\CertificateLicense;
 use App\Models\Certification;
 use App\Models\Contact;
+use App\Models\DirectDebit;
+use App\Models\DisbursementSolution;
 use App\Models\Faq;
+use App\Models\MarketPlace;
+use App\Models\MobileApp;
 use App\Models\Office;
+use App\Models\OnlineSale;
+use App\Models\Payment;
+use App\Models\PenRemit;
 use App\Models\People;
+use App\Models\PosService;
 use App\Models\PrivacyPolicy;
 use App\Models\Seo;
 use App\Models\Solution;
 use App\Models\Story;
 use App\Models\TermCondition;
 use App\Models\User;
+use App\Models\UssdCollection;
 use App\Models\WhistleBlower;
 use App\Models\WhyCyberpay;
 use Illuminate\Http\Request;
@@ -183,7 +193,7 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['required'],
             'image' => 'required|mimes:jpeg,png,jpg|max:1024',
         ]);
 
@@ -223,7 +233,7 @@ class AdminController extends Controller
         $validator = Validator::make(request()->all(), [
             'post_id' => ['required', 'numeric', 'exists:blog_posts,id'],
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['required'],
             'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
         ]);
 
@@ -310,8 +320,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'type' => ['required', 'string', 'max:255'],
-            'question' => ['required', 'string'],
-            'answer' => ['required', 'string'],
+            'question' => ['required'],
+            'answer' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -340,8 +350,8 @@ class AdminController extends Controller
         $validator = Validator::make(request()->all(), [
             'faq_id' => ['required', 'numeric', 'exists:faqs,id'],
             'type' => ['required', 'string', 'max:255'],
-            'question' => ['required', 'string'],
-            'answer' => ['required', 'string']
+            'question' => ['required'],
+            'answer' => ['required']
         ]);
 
         if ($validator->fails()) {
@@ -399,8 +409,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'title' => ['required'],
+            'description' => ['required'],
             'image' => 'required|mimes:jpeg,png,jpg|max:1024',
         ]);
 
@@ -439,8 +449,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'banner_id' => ['required', 'numeric', 'exists:banners,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'title' => ['required'],
+            'description' => ['required'],
             'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
         ]);
 
@@ -646,8 +656,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string']
+            'title' => ['required'],
+            'description' => ['required']
         ]);
 
         if ($validator->fails()) {
@@ -674,8 +684,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'certification_id' => ['required', 'numeric', 'exists:certifications,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string']
+            'title' => ['required'],
+            'description' => ['required']
         ]);
 
         if ($validator->fails()) {
@@ -989,8 +999,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'title' => ['required', 'string', 'max:255'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
             'image' => 'required|mimes:jpeg,png,jpg|max:1024',
             'link' => ['required', 'string'],
         ]);
@@ -1031,8 +1041,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'breadcrumb_id' => ['required', 'numeric', 'exists:breadcrumbs,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
             'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
             'link' => ['required', 'string'],
         ]);
@@ -1121,8 +1131,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'title' => ['required', 'string'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -1149,8 +1159,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'people_id' => ['required', 'numeric', 'exists:people,id'],
-            'title' => ['required', 'string'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -1208,8 +1218,8 @@ class AdminController extends Controller
     {
         //Validate Request
         $validator = Validator::make(request()->all(), [
-            'title' => ['required', 'string'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -1236,8 +1246,8 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'story_id' => ['required', 'numeric', 'exists:stories,id'],
-            'title' => ['required', 'string'],
-            'subtitle' => ['required', 'string'],
+            'title' => ['required'],
+            'subtitle' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -1421,8 +1431,8 @@ class AdminController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(), [
             'pageName' => ['required', 'string'], // No unique rule here
-            'setTitle' => ['required', 'string'],
-            'setDescription' => ['required', 'string'],
+            'setTitle' => ['required'],
+            'setDescription' => ['required'],
         ]);
 
         // Check if validation fails
@@ -1466,8 +1476,8 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'seo_id' => ['required', 'numeric', 'exists:seos,id'], // Ensure seo_id exists in the database
             'pageName' => ['required', 'string'],
-            'setTitle' => ['required', 'string'],
-            'setDescription' => ['required', 'string'],
+            'setTitle' => ['required'],
+            'setDescription' => ['required'],
         ]);
 
         // Check if validation fails
@@ -1789,11 +1799,11 @@ class AdminController extends Controller
             'title' => 'required|string',
             'image_url' => 'nullable|mimes:jpeg,png,jpg|max:1024',
             'caption' => 'required|string|max:255',
-            'description' => 'required|string',
-            'benefitCaption' => 'nullable|string|max:255',
+            'description' => 'required',
+            'benefitCaption' => 'nullable|max:255',
             'benefitList' => 'nullable|json',
-            'why_us' => 'nullable|string',
-            'benefitMerchantCaption' => 'nullable|string|max:255',
+            'why_us' => 'nullable',
+            'benefitMerchantCaption' => 'nullable|max:255',
             'benefitMerchantList' => 'nullable|json',
         ]);
 
@@ -1948,6 +1958,885 @@ class AdminController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Terms and Conditions record created successfully!',
+            ], 201);
+        }
+    }
+
+    // Solutions
+    public function admin_solution_market_place()
+    {
+        $mp = MarketPlace::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $mp
+        ], 200);
+    }
+
+    public function admin_market_place(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $mp = MarketPlace::first();
+
+        if ($mp) {
+            // Update the existing record
+            $mp->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $mp = MarketPlace::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_mobile_app()
+    {
+        $ma = MobileApp::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ma
+        ], 200);
+    }
+
+    public function admin_mobile_app(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $ma = MobileApp::first();
+
+        if ($ma) {
+            // Update the existing record
+            $ma->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $ma = MobileApp::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_payment_link()
+    {
+        $os = OnlineSale::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $os
+        ], 200);
+    }
+
+    public function admin_payment_link(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required|string',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $ma = OnlineSale::first();
+
+        if ($ma) {
+            // Update the existing record
+            $ma->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $ma = OnlineSale::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_ussd_collection()
+    {
+        $uc = UssdCollection::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $uc
+        ], 200);
+    }
+
+    public function admin_ussd_collection(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $uc = UssdCollection::first();
+
+        if ($uc) {
+            // Update the existing record
+            $uc->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $uc = UssdCollection::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_direct_debit()
+    {
+        $db = DirectDebit::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $db
+        ], 200);
+    }
+
+    public function admin_direct_debit(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $uc = DirectDebit::first();
+
+        if ($uc) {
+            // Update the existing record
+            $uc->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $uc = DirectDebit::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_pos_service()
+    {
+        $ps = PosService::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ps
+        ], 200);
+    }
+
+    public function admin_solution_pos_service_post(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setImage' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'setDescription' => ['required'],
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+        $filename = pathinfo($file, PATHINFO_FILENAME);
+        $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+        [
+            'folder' => config('app.name') . '/solutions',
+            "public_id" => $filename,
+            "use_filename" => TRUE
+        ])->getSecurePath();
+
+        // Create a new PosService record
+        PosService::create([
+            'setImage' => $response,
+            'setDescription' => $request->setDescription
+        ]);
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Record created successfully!'
+        ], 200);
+    }
+
+    public function admin_solution_pos_service_update(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'solution_id' => ['required', 'numeric', 'exists:solutions,id'], // Ensure solution_id exists in the database
+            'setImage' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Find the existing PosService record by ID
+        $solution = PosService::find($request->solution_id);
+
+        if (request()->hasFile('setImage')) {
+
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name').'/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            if($solution->image)
+            {
+                $token = explode('/', $solution->image);
+                $token2 = explode('.', $token[sizeof($token)-1]);
+                cloudinary()->destroy(config('app.name').'/solutions/'.$token2[0]);
+            }
+        }
+
+        // Update the SEO record
+        $solution->update([
+            'setImage' => $response ?? $solution->setImage,
+            'setDescription' => $request->setDescription ?? $solution->setDescrition
+        ]);
+
+        // Return a success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Record updated successfully!'
+        ], 200);
+    }
+
+    public function admin_solution_pos_service_delete(Request $request)
+    {
+        $solution = PosService::find($request->solution_id);
+
+        if (!$solution) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pos Service page not found.',
+            ], 401);
+        }
+
+        if($solution->setImage)
+        {
+            $token = explode('/', $solution->setImage);
+            $token2 = explode('.', $token[sizeof($token)-1]);
+            cloudinary()->destroy(config('app.name').'/solutions/'.$token2[0]);
+        }
+
+        $solution->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Record deleted successfully.',
+        ], 200);
+    }
+
+    public function admin_solution_bulk_sms()
+    {
+        $bs = BulkSms::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $bs
+        ], 200);
+    }
+
+    public function admin_bulk_sms(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required|string',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            'setFirstContent' => 'required|json',  // Validate as JSON
+            'setSecondContent' => 'required|json',  // Validate as JSON
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $bs = BulkSms::first();
+
+        if ($bs) {
+            // Update the existing record
+            $bs->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $bs = BulkSms::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_pen_remit()
+    {
+        $pr = PenRemit::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $pr
+        ], 200);
+    }
+
+    public function admin_pen_remit(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required|string',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            'setContent' => 'required|json',  // Validate as JSON
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $pr = PenRemit::first();
+
+        if ($pr) {
+            // Update the existing record
+            $pr->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $pr = PenRemit::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_payment()
+    {
+        $payment = Payment::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $payment
+        ], 200);
+    }
+
+    public function admin_payment(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required|string',
+            'setImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            'setContent' => 'required|json',  // Validate as JSON
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        if($request->hasFile('setImage'))
+        {
+            // Upload image to Cloudinary
+            $file = str_replace(' ', '', uniqid(5).'-'.$request->setImage->getClientOriginalName());
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+
+            $response = cloudinary()->uploadFile($request->setImage->getRealPath(),
+            [
+                'folder' => config('app.name') . '/solutions',
+                "public_id" => $filename,
+                "use_filename" => TRUE
+            ])->getSecurePath();
+
+            // Get the Cloudinary image URL
+            $data['setImage'] = $response;
+        }
+
+        // Find the first record (assuming there's only one record)
+        $payment = Payment::first();
+
+        if ($payment) {
+            // Update the existing record
+            $payment->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setImage' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate image input
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            $payment = Payment::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_solution_disbursement()
+    {
+        $ds = DisbursementSolution::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ds
+        ], 200);
+    }
+
+    public function admin_disbursement(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setDescription' => 'required',
+            'setTitle' => 'required', // Validate image input
+            'setContent' => 'required|array',
+            'setContent.*.image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate each image
+            'setContent.*.title' => 'required',
+            'setContent.*.description' => 'required',
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        foreach ($data['setContent'] as &$content) {
+            if (isset($content['image'])) {
+                $response = cloudinary()->uploadFile($content['image']->getRealPath(), [
+                    'folder' => config('app.name') . '/solutions',
+                    "use_filename" => TRUE
+                ])->getSecurePath();
+
+                // Store the Cloudinary image URL
+                $content['image'] = $response;
+            }
+        }
+
+        // Convert setContent to JSON
+        $data['setContent'] = json_encode($data['setContent']);
+
+        // Find the first record (assuming there's only one record)
+        $ds = DisbursementSolution::first();
+
+        if ($ds) {
+            // Update the existing record
+            $ds->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'setContent.*.image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Validate each image
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please see errors parameter for all errors.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Create a new record
+            DisbursementSolution::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
             ], 201);
         }
     }

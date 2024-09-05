@@ -7,19 +7,29 @@ use App\Models\AdsBanner;
 use App\Models\Banner;
 use App\Models\BlogPost;
 use App\Models\Breadcrumb;
+use App\Models\BulkSms;
 use App\Models\Career;
 use App\Models\CareerRole;
 use App\Models\CertificateLicense;
 use App\Models\Certification;
 use App\Models\Contact;
+use App\Models\DirectDebit;
+use App\Models\DisbursementSolution;
 use App\Models\Faq;
+use App\Models\MarketPlace;
+use App\Models\MobileApp;
 use App\Models\Office;
+use App\Models\OnlineSale;
+use App\Models\Payment;
+use App\Models\PenRemit;
 use App\Models\People;
+use App\Models\PosService;
 use App\Models\PrivacyPolicy;
 use App\Models\Seo;
 use App\Models\Story;
 use App\Models\TermCondition;
 use App\Models\User;
+use App\Models\UssdCollection;
 use App\Models\WhistleBlower;
 use App\Models\WhyCyberpay;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -475,6 +485,106 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'data' => $tc
+        ], 200);
+    }
+
+    public function solution_market_place()
+    {
+        $mp = MarketPlace::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $mp
+        ], 200);
+    }
+
+    public function solution_mobile_app()
+    {
+        $ma = MobileApp::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ma
+        ], 200);
+    }
+
+    public function solution_payment_link()
+    {
+        $os = OnlineSale::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $os
+        ], 200);
+    }
+
+    public function solution_ussd_collection()
+    {
+        $uc = UssdCollection::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $uc
+        ], 200);
+    }
+
+    public function solution_direct_debit()
+    {
+        $db = DirectDebit::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $db
+        ], 200);
+    }
+
+    public function solution_pos_service()
+    {
+        $ps = PosService::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ps
+        ], 200);
+    }
+
+    public function solution_bulk_sms()
+    {
+        $bs = BulkSms::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $bs
+        ], 200);
+    }
+
+    public function solution_pen_remit()
+    {
+        $pr = PenRemit::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $pr
+        ], 200);
+    }
+
+    public function solution_payment()
+    {
+        $payment = Payment::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $payment
+        ], 200);
+    }
+
+    public function solution_disbursement()
+    {
+        $ds = DisbursementSolution::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $ds
         ], 200);
     }
 }

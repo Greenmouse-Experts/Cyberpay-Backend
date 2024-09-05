@@ -147,6 +147,48 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             // Privacy Policies
             Route::get('/privacy/policies', [AdminController::class, 'admin_privacy_policies']);
             Route::post('/privacy/policy', [AdminController::class, 'admin_privacy_policy']);
+
+            // Market Place Solution
+            Route::get('/solution/market/place', [AdminController::class, 'admin_solution_market_place']);
+            Route::post('/market/place', [AdminController::class, 'admin_market_place']);
+
+            // Mobile App Solution
+            Route::get('/solution/mobile/app', [AdminController::class, 'admin_solution_mobile_app']);
+            Route::post('/mobile/app', [AdminController::class, 'admin_mobile_app']);
+
+            // Payment Link Solution
+            Route::get('/solution/payment/link', [AdminController::class, 'admin_solution_payment_link']);
+            Route::post('/payment/link', [AdminController::class, 'admin_payment_link']);
+
+            // USSD Collections Solution
+            Route::get('/solution/ussd/collection', [AdminController::class, 'admin_solution_ussd_collection']);
+            Route::post('/ussd/collection', [AdminController::class, 'admin_ussd_collection']);
+
+            // Direct Debit Solution
+            Route::get('/solution/direct/debit', [AdminController::class, 'admin_solution_direct_debit']);
+            Route::post('/direct/debit', [AdminController::class, 'admin_direct_debit']);
+
+            // POS Service
+            Route::get('/solution/pos/service', [AdminController::class, 'admin_solution_pos_service']);
+            Route::post('/solution/pos/service/post', [AdminController::class, 'admin_solution_pos_service_post']);
+            Route::post('/solution/pos/service/update', [AdminController::class, 'admin_solution_pos_service_update']);
+            Route::post('/solution/pos/service/delete', [AdminController::class, 'admin_solution_pos_service_delete']);
+
+            // Bulk Sms Solution
+            Route::get('/solution/bulk/sms', [AdminController::class, 'admin_solution_bulk_sms']);
+            Route::post('/bulk/sms', [AdminController::class, 'admin_bulk_sms']);
+
+            // Pen Remit Solution
+            Route::get('/solution/pen/remit', [AdminController::class, 'admin_solution_pen_remit']);
+            Route::post('/pen/remit', [AdminController::class, 'admin_pen_remit']);
+
+            // Payment Solution
+            Route::get('/solution/payment', [AdminController::class, 'admin_solution_payment']);
+            Route::post('/payment', [AdminController::class, 'admin_payment']);
+
+            // Disbursement Solution
+            Route::get('/solution/disbursement', [AdminController::class, 'admin_solution_disbursement']);
+            Route::post('/disbursement', [AdminController::class, 'admin_disbursement']);
         }
     );
 });
@@ -198,3 +240,15 @@ Route::get('/terms/conditions', [Controller::class, 'terms_conditions']);
 
 // Privacy Policies
 Route::get('/privacy/policies', [Controller::class, 'privacy_policies']);
+
+// Solutions
+Route::get('/solution/market/place', [Controller::class, 'solution_market_place']);
+Route::get('/solution/mobile/app', [Controller::class, 'solution_mobile_app']);
+Route::get('/solution/payment/link', [Controller::class, 'solution_payment_link']);
+Route::get('/solution/ussd/collection', [Controller::class, 'solution_ussd_collection']);
+Route::get('/solution/direct/debit', [Controller::class, 'solution_direct_debit']);
+Route::get('/solution/pos/service', [Controller::class, 'solution_pos_service']);
+Route::get('/solution/bulk/sms', [Controller::class, 'solution_bulk_sms']);
+Route::get('/solution/pen/remit', [Controller::class, 'solution_pen_remit']);
+Route::get('/solution/payment', [Controller::class, 'solution_payment']);
+Route::get('/solution/disbursement', [AdminController::class, 'solution_disbursement']);
