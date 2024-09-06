@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\About;
 use App\Models\AdsBanner;
 use App\Models\Banner;
+use App\Models\BcmsPolicyStatement;
 use App\Models\BlogPost;
 use App\Models\Breadcrumb;
 use App\Models\BulkSms;
@@ -16,6 +17,7 @@ use App\Models\Contact;
 use App\Models\DirectDebit;
 use App\Models\DisbursementSolution;
 use App\Models\Faq;
+use App\Models\IsmsPolicyStatement;
 use App\Models\MarketPlace;
 use App\Models\MobileApp;
 use App\Models\Office;
@@ -585,6 +587,26 @@ class Controller extends BaseController
         return response()->json([
             'success' => true,
             'data' => $ds
+        ], 200);
+    }
+
+    public function bcms_policy_statements()
+    {
+        $bcms = BcmsPolicyStatement::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $bcms
+        ], 200);
+    }
+
+    public function isms_policy_statements()
+    {
+        $isms = IsmsPolicyStatement::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $isms
         ], 200);
     }
 }

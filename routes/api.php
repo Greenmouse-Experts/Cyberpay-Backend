@@ -189,6 +189,14 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             // Disbursement Solution
             Route::get('/solution/disbursement', [AdminController::class, 'admin_solution_disbursement']);
             Route::post('/disbursement', [AdminController::class, 'admin_disbursement']);
+
+            // BCMS Policy Statement
+            Route::get('/bcms/policy/statements', [AdminController::class, 'admin_bcms_policy_statements']);
+            Route::post('/bcms/policy/statement', [AdminController::class, 'admin_bcms_policy_statement']);
+
+            // ISMS Policy Statement
+            Route::get('/isms/policy/statements', [AdminController::class, 'admin_isms_policy_statements']);
+            Route::post('/isms/policy/statement', [AdminController::class, 'admin_isms_policy_statement']);
         }
     );
 });
@@ -251,4 +259,10 @@ Route::get('/solution/pos/service', [Controller::class, 'solution_pos_service'])
 Route::get('/solution/bulk/sms', [Controller::class, 'solution_bulk_sms']);
 Route::get('/solution/pen/remit', [Controller::class, 'solution_pen_remit']);
 Route::get('/solution/payment', [Controller::class, 'solution_payment']);
-Route::get('/solution/disbursement', [AdminController::class, 'solution_disbursement']);
+Route::get('/solution/disbursement', [Controller::class, 'solution_disbursement']);
+
+// BCMS Policy Statement
+Route::get('/bcms/policy/statements', [Controller::class, 'bcms_policy_statements']);
+
+// ISMS Policy Statement
+Route::get('/isms/policy/statements', [Controller::class, 'isms_policy_statements']);

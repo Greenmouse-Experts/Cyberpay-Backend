@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\About;
 use App\Models\AdsBanner;
 use App\Models\Banner;
+use App\Models\BcmsPolicyStatement;
 use App\Models\BlogPost;
 use App\Models\Breadcrumb;
 use App\Models\BulkSms;
@@ -16,6 +17,7 @@ use App\Models\Contact;
 use App\Models\DirectDebit;
 use App\Models\DisbursementSolution;
 use App\Models\Faq;
+use App\Models\IsmsPolicyStatement;
 use App\Models\MarketPlace;
 use App\Models\MobileApp;
 use App\Models\Office;
@@ -2874,6 +2876,118 @@ class AdminController extends Controller
 
             // Create a new record
             DisbursementSolution::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_bcms_policy_statements()
+    {
+        $bcms = BcmsPolicyStatement::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $bcms
+        ], 200);
+    }
+
+    public function admin_bcms_policy_statement(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setContent' => 'required',
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        // Convert setContent to JSON
+        $data['setContent'] = json_encode($data['setContent']);
+
+        // Find the first record (assuming there's only one record)
+        $bcms = BcmsPolicyStatement::first();
+
+        if ($bcms) {
+            // Update the existing record
+            $bcms->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+
+            // Create a new record
+            BcmsPolicyStatement::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record created successfully!',
+            ], 201);
+        }
+    }
+
+    public function admin_isms_policy_statements()
+    {
+        $isms = IsmsPolicyStatement::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $isms
+        ], 200);
+    }
+
+    public function admin_isms_policy_statement(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'setContent' => 'required',
+        ]);
+
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please see errors parameter for all errors.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get validated data
+        $data = $validator->validated();
+
+        // Convert setContent to JSON
+        $data['setContent'] = json_encode($data['setContent']);
+
+        // Find the first record (assuming there's only one record)
+        $isms = IsmsPolicyStatement::first();
+
+        if ($isms) {
+            // Update the existing record
+            $isms->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Record updated successfully!',
+            ], 200);
+        } else {
+
+            // Create a new record
+            IsmsPolicyStatement::create($data);
 
             return response()->json([
                 'success' => true,
