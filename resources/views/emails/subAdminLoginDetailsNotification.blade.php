@@ -258,7 +258,7 @@
         }
 
         h1 {
-            color: #278a4a;
+            color: #f40c3b;
             font-size: 20px;
             margin-bottom: 15px;
             animation: fadeInUp 0.5s ease-out;

@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('ads_banners', function (Blueprint $table) {
             $table->id();
             $table->string('image');
+            $table->timestamp('scheduled_at')->nullable();  // Schedule for future display
+            $table->boolean('is_published')->default(false); // Track if published
             $table->timestamps();
         });
     }

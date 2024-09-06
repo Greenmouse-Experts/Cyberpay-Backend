@@ -195,6 +195,7 @@ class AdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required'],
             'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'scheduled_at' => 'nullable|date|after:now', // Ensure future date
         ]);
 
         if ($validator->fails()) {
@@ -215,10 +216,17 @@ class AdminController extends Controller
             "use_filename" => TRUE
         ])->getSecurePath();
 
+        // Determine if the blog should be published immediately or scheduled
+        $isPublished = !$request->scheduled_at;
+        $scheduledAt = $request->scheduled_at ?? now();
+
+        // Create the blog post
         BlogPost::create([
             'title' => $request->title,
             'description' => $request->description,
             'image' => $response,
+            'scheduled_at' => $scheduledAt,
+            'is_published' => $isPublished
         ]);
 
         return response()->json([
@@ -229,12 +237,20 @@ class AdminController extends Controller
 
     public function admin_blog_update(Request $request)
     {
+        $post = BlogPost::find($request->post_id);
+
+        // Determine if `scheduled_at` is being updated or not
+        $scheduledAtRule = ($request->scheduled_at !== $post->scheduled_at)
+        ? ['required', 'date', 'after:now'] // Apply future date validation only if being updated
+        : ['nullable', 'date']; // Allow null or any date if not being updated
+
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'post_id' => ['required', 'numeric', 'exists:blog_posts,id'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required'],
             'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+            'scheduled_at' => $scheduledAtRule,
         ]);
 
         if ($validator->fails()) {
@@ -244,8 +260,6 @@ class AdminController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
-        $post = BlogPost::find($request->post_id);
 
         if (request()->hasFile('image')) {
 
@@ -265,12 +279,20 @@ class AdminController extends Controller
                 $token2 = explode('.', $token[sizeof($token)-1]);
                 cloudinary()->destroy(config('app.name').'/blog/'.$token2[0]);
             }
+
+            $post->image = $response; // Update image URL
         }
 
+        // Determine if the blog should be published immediately or scheduled
+        $isPublished = !$request->filled('scheduled_at');
+        $scheduledAt = $request->scheduled_at;
+
+        // Update blog post data
         $post->update([
             'title' => $request->title,
             'description' => $request->description,
-            'image' => $response ?? $post->image
+            'scheduled_at' => $scheduledAt,
+            'is_published' => $isPublished,
         ]);
 
         return response()->json([
@@ -798,6 +820,7 @@ class AdminController extends Controller
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'image' => 'required|mimes:jpeg,png,jpg|max:1024',
+            'scheduled_at' => 'nullable|date|after:now', // Ensure future date for scheduling
         ]);
 
         if ($validator->fails()) {
@@ -818,8 +841,14 @@ class AdminController extends Controller
             "use_filename" => TRUE
         ])->getSecurePath();
 
+        // Determine if the ad banner should be published immediately or scheduled
+        $isPublished = !$request->filled('scheduled_at');
+        $scheduledAt = $request->scheduled_at ?? now();
+
         AdsBanner::create([
             'image' => $response,
+            'scheduled_at' => $scheduledAt,
+            'is_published' => $isPublished,
         ]);
 
         return response()->json([
@@ -830,10 +859,18 @@ class AdminController extends Controller
 
     public function admin_ads_banner_update(Request $request)
     {
+        $banner = AdsBanner::find($request->banner_id);
+
+        // Determine if `scheduled_at` is being updated or not
+        $scheduledAtRule = ($request->scheduled_at !== $banner->scheduled_at)
+        ? ['required', 'date', 'after:now'] // Apply future date validation only if being updated
+        : ['nullable', 'date']; // Allow null or any date if not being updated
+
         //Validate Request
         $validator = Validator::make(request()->all(), [
             'banner_id' => ['required', 'numeric', 'exists:ads_banners,id'],
             'image' => 'nullable|mimes:jpeg,png,jpg|max:1024',
+            'scheduled_at' => $scheduledAtRule
         ]);
 
         if ($validator->fails()) {
@@ -843,8 +880,6 @@ class AdminController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
-        $banner = AdsBanner::find($request->banner_id);
 
         if (request()->hasFile('image')) {
 
@@ -866,8 +901,14 @@ class AdminController extends Controller
             }
         }
 
+        // Determine if the blog should be published immediately or scheduled
+        $isPublished = !$request->filled('scheduled_at');
+        $scheduledAt = $request->scheduled_at;
+
         $banner->update([
-            'image' => $response ?? $banner->image
+            'image' => $response ?? $banner->image,
+            'scheduled_at' => $scheduledAt,
+            'is_published' => $isPublished,
         ]);
 
         return response()->json([

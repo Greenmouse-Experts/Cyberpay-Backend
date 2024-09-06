@@ -331,7 +331,7 @@ class Controller extends BaseController
         // Check if blog_id is provided
         if ($request->has('blog_id')) {
 
-            $blog = BlogPost::find($request->query('blog_id'));
+            $blog = BlogPost::where(['id' => $request->query('blog_id'), 'is_published' => true])->first();
 
             if (!$blog) {
                 return response()->json(['success' => false, 'message' => "Selected blog does not exist."], 401);
@@ -345,7 +345,7 @@ class Controller extends BaseController
         }
 
         // If no blog_id is provided, return all blogs
-        $blogs = BlogPost::latest()->get();
+        $blogs = BlogPost::latest()->where('is_published', true)->get();
 
         return response()->json(['success' => true, 'data' => $blogs], 200);
     }
@@ -390,7 +390,7 @@ class Controller extends BaseController
 
     public function ads_banners()
     {
-        $ads = AdsBanner::latest()->get();
+        $ads = AdsBanner::latest()->where('is_published', true)->get();
 
         return response()->json([
             'success' => true,

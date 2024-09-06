@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('image');
             $table->string('views')->default(0);
+            $table->timestamp('scheduled_at')->nullable();  // Schedule for future publication
+            $table->boolean('is_published')->default(false); // Track if published
             $table->timestamps();
         });
     }
