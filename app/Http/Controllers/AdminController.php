@@ -60,6 +60,7 @@ class AdminController extends Controller
         $totalCareers = Career::get()->count();
         $totalContacts = Contact::get()->count();
         $totalCertification = Certification::get()->count();
+        $totalCertificationLicense = CertificateLicense::get()->count();
 
         $startD = Carbon::now()->startOfYear()->format('Y-m-d');
         $endD = Carbon::now()->endOfYear()->format('Y-m-d');
@@ -81,6 +82,7 @@ class AdminController extends Controller
             'totalCareers' => $totalCareers,
             'totalContacts' => $totalContacts,
             'totalCertification' => $totalCertification,
+            'totalCertificationLicense' => $totalCertificationLicense,
             'getVisitors' => $getVisitors,
             'getBounceRate' => $getBounceRate,
             'getUserBehavior' => $getUserBehavior,
