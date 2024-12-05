@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             // Blogs
             Route::get('/blogs', [AdminController::class, 'admin_blogs']);
             Route::post('/blog/post', [AdminController::class, 'admin_blog_post']);
+            Route::put('/blog/status', [AdminController::class, 'admin_blog_status']);
             Route::post('/blog/update', [AdminController::class, 'admin_blog_update']);
             Route::post('/blog/delete', [AdminController::class, 'admin_blog_delete']);
 

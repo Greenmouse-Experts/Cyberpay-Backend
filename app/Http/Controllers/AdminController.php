@@ -305,6 +305,27 @@ class AdminController extends Controller
         ], 200);
     }
 
+
+    public function admin_blog_status(Request $request)
+    {
+        $post = BlogPost::find($request->post_id);
+
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Blog post not found.',
+            ], 401);
+        }
+
+        $post->is_published = !$post->is_published; // Toggle the status
+        $post->save(); // Save the updated status to the database
+
+        return response()->json([
+            'success' => true,
+            'message' => "Blog status updated successfully.",
+        ], 200);
+    }
+
     public function admin_blog_delete(Request $request)
     {
         $post = BlogPost::find($request->post_id);
