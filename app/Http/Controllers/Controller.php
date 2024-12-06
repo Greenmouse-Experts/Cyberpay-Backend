@@ -19,6 +19,7 @@ use App\Models\DisbursementSolution;
 use App\Models\Faq;
 use App\Models\IsmsPolicyStatement;
 use App\Models\MarketPlace;
+use App\Models\Menu;
 use App\Models\MobileApp;
 use App\Models\Office;
 use App\Models\OnlineSale;
@@ -608,5 +609,12 @@ class Controller extends BaseController
             'success' => true,
             'data' => $isms
         ], 200);
+    }
+
+    public function get_menus()
+    {
+        $menus = Menu::latest()->get();
+
+        return response()->json(['success' => true, 'data' => $menus], 200);
     }
 }

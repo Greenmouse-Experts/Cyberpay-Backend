@@ -198,9 +198,18 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
             // ISMS Policy Statement
             Route::get('/isms/policy/statements', [AdminController::class, 'admin_isms_policy_statements']);
             Route::post('/isms/policy/statement', [AdminController::class, 'admin_isms_policy_statement']);
+
+            // Menus
+            Route::get('/menus', [AdminController::class, 'admin_menus']);
+            Route::post('/menus/post', [AdminController::class, 'admin_menus_post']);
+            Route::put('/menus/toggle/status', [AdminController::class, 'admin_menus_toggle_status']);
+            Route::post('/menus/delete', [AdminController::class, 'admin_menus_delete']);
         }
     );
 });
+
+// Menus
+Route::get('/menus', [Controller::class, 'get_menus']);
 
 // Blogs
 Route::get('/blogs', [Controller::class, 'get_blogs']);

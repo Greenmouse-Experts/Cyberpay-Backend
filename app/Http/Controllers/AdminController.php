@@ -19,6 +19,7 @@ use App\Models\DisbursementSolution;
 use App\Models\Faq;
 use App\Models\IsmsPolicyStatement;
 use App\Models\MarketPlace;
+use App\Models\Menu;
 use App\Models\MobileApp;
 use App\Models\Office;
 use App\Models\OnlineSale;
@@ -3017,5 +3018,77 @@ class AdminController extends Controller
                 'message' => 'Record created successfully!',
             ], 201);
         }
+    }
+
+    public function admin_menus()
+    {
+        $menus = Menu::all(); // Retrieve all records from the 'menus' table
+
+        return response()->json([
+            'success' => true,
+            'data' => $menus,
+        ], 200);
+    }
+
+    public function admin_menus_post(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        // Check if a menu with the same title already exists
+        $existingMenu = Menu::where('title', $request->input('title'))->first();
+
+        if ($existingMenu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A menu with this title already exists.',
+            ], 400);
+        }
+
+        Menu::create([
+            'title' => $request->input('title'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Menu added successfully!',
+        ], 201);
+    }
+
+    // Toggle the status
+    public function admin_menus_toggle_status(Request $request)
+    {
+        $menu = Menu::find($request->id);
+
+        if (!$menu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'menu not found',
+            ], 401);
+        }
+
+        // Toggle status between 'hide' and 'show'
+        $menu->status = $menu->status === 'hide' ? 'show' : 'hide';
+        $menu->save();
+
+        return response()->json(['success' => true, 'message' => 'Status updated successfully', 'data' => $menu], 200);
+    }
+
+    // Delete an Menu
+    public function admin_menus_delete(Request $request)
+    {
+        $menu = Menu::find($request->id);
+
+        if (!$menu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'menu not found',
+            ], 401);
+        }
+
+        $menu->delete();
+
+        return response()->json(['success' => true, 'message' => 'Menu deleted successfully'], 200);
     }
 }
